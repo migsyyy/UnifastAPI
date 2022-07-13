@@ -16,11 +16,11 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/hei', function () {
     Artisan::call('cache:clear');
     return "Cache is cleared";
+    // return view('welcome');
+});
+Route::get('/hei', function () {
 });
 
 // Route::get('/sample/{id}', [HeiController::class, 'show']);
