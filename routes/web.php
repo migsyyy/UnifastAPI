@@ -19,8 +19,9 @@ Route::get('/', function () {
      return view('welcome');
 });
 
+Route::get('/listhei', [HeiController::class, 'getHeiTypes']);
 // Route::get('/sample/{id}', [HeiController::class, 'show']);
-Route::get('/listhei/{heitype}/{region}', [HeiController::class, 'showhei']);
+// Route::get('/listhei/{heitype}/{region}', [HeiController::class, 'showhei']);
 Route::get('/searchhei/{hei}', [HeiController::class, 'searchhei']);
 Route::get('/hei/{hei}', [HeiController::class, 'getHeiInfo']);
 Route::get('/courses/{heiuii}', [HeiController::class, 'getCourses']);
