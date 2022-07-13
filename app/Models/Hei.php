@@ -7,6 +7,14 @@ use Illuminate\Support\Facades\DB;
 
 class Hei extends Model{
 
+    public function getHeiTypes()
+    {
+        $heitype = DB::table('tbl_heis')->select('hei_it')->
+        groupBy('hei_it')->get();
+
+        echo json_encode($heitype);
+    }
+
     public function searchHeiName($heiname)
     {
         $hei = DB::table('tbl_heis')->select('hei_region_nir')->

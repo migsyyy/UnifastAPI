@@ -8,9 +8,12 @@ use App\Models\Hei;
 
 class HeiController extends Controller
 {
-    public function showhei($heitype, $heiregion = '') //list heis per region
+    public function showhei($heitype = '', $heiregion = '', $heiprov = '') //list heis per region
     {
         $heimodel = new Hei();
+        if (!$heitype) {
+            echo $heimodel->getHeiTypes();
+        }
         echo $heimodel->showHei($heitype, $heiregion);
     }
     public function searchhei($heiname) //search hei by name
