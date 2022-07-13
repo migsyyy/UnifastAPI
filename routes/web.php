@@ -17,6 +17,9 @@ use App\Http\Controllers\HeiController;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/hei', function () {
+    return view('welcome');
+});
 
 // Route::get('/sample/{id}', [HeiController::class, 'show']);
 Route::get('/listhei/{heitype}/{region}', [HeiController::class, 'showhei']);
