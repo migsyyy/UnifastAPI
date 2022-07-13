@@ -13,10 +13,20 @@ class HeiController extends Controller
         $heimodel = new Hei();
         echo $heimodel->getHeiTypes();
     }
+    public function getHeiRegions()
+    {
+        $heimodel = new Hei();
+        echo $heimodel->getHeiRegions();
+    }
+    public function getHeiProvinces($heitype,$heiregion)
+    {
+        $heimodel = new Hei();
+        echo $heimodel->getHeiProvinces($heiregion);
+    }
     public function showhei($heitype = '', $heiregion = '', $heiprov = '') //list heis per region
     {
         $heimodel = new Hei();
-        echo $heimodel->showHei($heitype, $heiregion);
+        echo $heimodel->showHei($heitype, $heiregion, $heiprov);
     }
     public function searchhei($heiname) //search hei by name
     {
