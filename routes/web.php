@@ -20,10 +20,11 @@ Route::get('/', function () {
 });
 
 //list heis
-Route::get('/listhei', [HeiController::class, 'getHeiTypes']);
-Route::get('/listhei/{heitype}', [HeiController::class, 'getHeiRegions']);
-Route::get('/listhei/{heitype}/{region}', [HeiController::class, 'getHeiProvinces']);
-Route::get('/listhei/{heitype}/{region}/{province}', [HeiController::class, 'showhei']);
+// Route::get('/listhei', [HeiController::class, 'getHeiTypes']);
+Route::get('/listhei', [HeiController::class, 'getHeiRegions']);
+Route::get('/listhei/{region}', [HeiController::class, 'getHeiProvinces']);
+Route::get('/listhei/{region}/{province}', [HeiController::class, 'showhei']);
+Route::get('/listhei/{region}/{province}/{heitype}', [HeiController::class, 'showhei']);
 
 
 Route::get('/searchhei/{hei}', [HeiController::class, 'searchhei']);
