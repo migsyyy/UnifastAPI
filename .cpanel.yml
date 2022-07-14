@@ -2,7 +2,7 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/unifastgov/
-    - /bin/cp -r * $DEPLOYPATH #copy all from root
+    - /bin/cp -r * $DEPLOYPATH/UnifastAPI #copy all from root
 #    - /bin/cp -r ./UnifastAPI/public/* $DEPLOYPATH/public_html/UnifastAPI
     - /bin/cp ./UnifastAPI/public/js/*.js $DEPLOYPATH/public_html/UnifastAPI/js
     - /bin/cp ./UnifastAPI/public/css/*.css $DEPLOYPATH/public_html/UnifastAPI/css
