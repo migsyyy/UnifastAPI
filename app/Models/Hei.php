@@ -54,25 +54,14 @@ class Hei extends Model
             $hei_it = '';
         }
         if ($heitype == 1) {
-            $hei_it = 'CHED Supervised Inst.';
+            $hei_it = 'SUC';
         }
         if ($heitype == 2) {
             $hei_it = 'LUC';
         }
         if ($heitype == 3) {
-            $hei_it = "Other Gov't Sch.";
-        }
-        if ($heitype == 4) {
             $hei_it = 'Private HEI';
         }
-        if ($heitype == 5) {
-            $hei_it = 'Special HEI';
-        }
-        if ($heitype == 6) {
-            $hei_it = 'SUC';
-        }
-
-
 
 
         $hei = DB::table('tbl_heis')->select('hei_region_nir')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_it', 'like', '%' . $hei_it . '%')->where('hei_psg_region', '=', $heiregion)->where('hei_prov_code', '=', $heiprov)->get();
