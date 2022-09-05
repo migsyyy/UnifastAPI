@@ -21,11 +21,12 @@ Route::get('/', function () {
 
 //list heis
 // Route::get('/listhei', [HeiController::class, 'getHeiTypes']);
-Route::get('/listhei', [HeiController::class, 'getHeiRegions']);
-Route::get('/listhei/{region}', [HeiController::class, 'getHeiProvinces']);
-Route::get('/listhei/{region}/{province}', [HeiController::class, 'showhei']);
-Route::get('/listhei/{region}/{province}/{heitype}', [HeiController::class, 'showhei']);
+Route::get('/listhei', [HeiController::class, 'getRegions']);
+Route::get('/listhei/{region}', [HeiController::class, 'getProvinces']);
+Route::get('/listhei/{region}/{province}', [HeiController::class, 'getHeis']);
+Route::get('/listhei/{region}/{province}/{heitype}', [HeiController::class, 'getHeis']);
 
+Route::get('/disinfo/{region?}/{province?}/{hei?}', [HeiController::class, 'disbursementInfo']);
 
 Route::get('/searchhei/{hei}', [HeiController::class, 'searchhei']);
 Route::get('/hei/{hei}', [HeiController::class, 'getHeiInfo']);
