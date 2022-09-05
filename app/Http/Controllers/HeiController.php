@@ -137,27 +137,27 @@ class HeiController extends Controller
     public function getHeis($heiregion = '', $heiprov = '', $heitype = '')
     {
 
-        $heiprov = $heiprov - 1;
-        $heiregion = str_pad($heiregion, 2, '0', STR_PAD_LEFT);
-
-        if ($heitype == '') {
-            $hei_it = '';
-        }
-        if ($heitype == 1) {
-            $hei_it = 'SUC';
-        }
-        if ($heitype == 2) {
-            $hei_it = 'LUC';
-        }
-        if ($heitype == 3) {
-            $hei_it = 'Private HEI';
-        }
-        if ($heiregion == 15) {
-            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
-        } else {
-            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
-        }
         if (is_numeric($heiregion) && is_numeric($heiprov)) {
+            $heiprov = $heiprov - 1;
+            $heiregion = str_pad($heiregion, 2, '0', STR_PAD_LEFT);
+
+            if ($heitype == '') {
+                $hei_it = '';
+            }
+            if ($heitype == 1) {
+                $hei_it = 'SUC';
+            }
+            if ($heitype == 2) {
+                $hei_it = 'LUC';
+            }
+            if ($heitype == 3) {
+                $hei_it = 'Private HEI';
+            }
+            if ($heiregion == 15) {
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+            } else {
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+            }
 
             if ($heiprov < count($heiprovince)) {
                 $heiprovcode = $heiprovince[$heiprov]->hei_prov_code;
