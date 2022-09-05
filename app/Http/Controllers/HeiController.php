@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Hei;
+use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Facades\DB;
 
 
@@ -16,68 +17,74 @@ class HeiController extends Controller
         if (!$region) {
             $this->getRegions();
         } elseif (!$province && $region) {
-            $this->getProvinces($region);
+            if (is_numeric($region)) {
+                $this->getProvinces($region);
+            }
+            echo json_encode([]);
         } elseif (!$heiid && $region && $province) {
-            $this->getHeis($region, $province);
-        } else {
-            if ($region == 15) {
-                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
-            } else {
-                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $region)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+            if (is_numeric($region) && is_numeric($province)) {
+                $this->getProvinces($region);
             }
-            if ($province <= count($heiprovince)) {
-                $heiprovcode = $heiprovince[$province - 1]->hei_prov_code;
-                $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_prov_code', '=', $heiprovcode)->orderBy('hei_shortname')->get();
-                foreach ($heis as $key => $hei) {
-                    // $hei->seq_id = $key + 1;
-                    if ($key + 1 == $heiid) {
-                        $hei_uii = $hei->hei_uii;
-                    }
+            echo json_encode([]);
+        } elseif ($heiid && $region && $province) {
+            if (is_numeric($heiid) && is_numeric($region) && is_numeric($province)) {
+
+                if ($region == 15) {
+                    $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+                } else {
+                    $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $region)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
                 }
-                $esgppa = DB::table("tbl_esgppa_2021_2022")
-                ->select("uid", "hei_uii", "hei_name", "date_disbursed")
-                ->where("in_disbursement", "=", "PAID")
-                ->where("hei_uii", "=", $hei_uii);
+                if ($province <= count($heiprovince)) {
+                    $heiprovcode = $heiprovince[$province - 1]->hei_prov_code;
+                    $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_prov_code', '=', $heiprovcode)->orderBy('hei_shortname')->get();
+                    foreach ($heis as $key => $hei) {
+                        // $hei->seq_id = $key + 1;
+                        if ($key + 1 == $heiid) {
+                            $hei_uii = $hei->hei_uii;
+                        }
+                    }
+                    $esgppa = DB::table("tbl_esgppa_2021_2022")
+                        ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                        ->where("in_disbursement", "=", "PAID")
+                        ->where("hei_uii", "=", $hei_uii);
 
-            $pnsl = DB::table("tbl_pnsl_2021_2022")
-                ->select("uid", "hei_uii", "hei_name", "date_disbursed")
-                ->where("in_disbursement", "=", "PAID")
-                ->where("hei_uii", "=", $hei_uii);
+                    $pnsl = DB::table("tbl_pnsl_2021_2022")
+                        ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                        ->where("in_disbursement", "=", "PAID")
+                        ->where("hei_uii", "=", $hei_uii);
 
-            $lista = DB::table("tbl_lista_2021_2022")
-                ->select("uid", "hei_uii", "hei_name", "date_disbursed")
-                ->where("in_disbursement", "=", "PAID")
-                ->where("hei_uii", "=", $hei_uii);
+                    $lista = DB::table("tbl_lista_2021_2022")
+                        ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                        ->where("in_disbursement", "=", "PAID")
+                        ->where("hei_uii", "=", $hei_uii);
 
-            $union = $esgppa->union($pnsl)->union($lista);
-            $dis_info = DB::table("tbl_heis")
-                ->selectRaw('union_epl.hei_uii,
-            union_epl.hei_name,
-            tbl_heis.hei_it,
-            tbl_heis.hei_focal,
-            tbl_heis.hei_focal_contact,
-            tbl_heis.hei_focal_email,
-            CASE
-                tbl_heis.hei_it
-                WHEN "PRIVATE HEI" THEN 30000 * COUNT(*)
-                WHEN "SUC" THEN 20000 * COUNT(*)
-                WHEN "LUC" THEN 20000 * COUNT(*)
-            END AS amount,
-            date_disbursed,
-            COUNT(*) AS bene')
-                ->joinSub($union, 'union_epl', function ($join) {
-                    $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
-                })
-                ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed')
-                ->get();
+                    $union = $esgppa->union($pnsl)->union($lista);
+                    $dis_info = DB::table("tbl_heis")
+                        ->selectRaw('union_epl.hei_uii,
+                                union_epl.hei_name,
+                                tbl_heis.hei_it,
+                                tbl_heis.hei_focal,
+                                tbl_heis.hei_focal_contact,
+                                tbl_heis.hei_focal_email,
+                                CASE
+                                    tbl_heis.hei_it
+                                    WHEN "PRIVATE HEI" THEN 30000 * COUNT(*)
+                                    WHEN "SUC" THEN 20000 * COUNT(*)
+                                    WHEN "LUC" THEN 20000 * COUNT(*)
+                                END AS amount,
+                                date_disbursed,
+                                COUNT(*) AS bene')
+                        ->joinSub($union, 'union_epl', function ($join) {
+                            $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
+                        })
+                        ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed')
+                        ->get();
 
-            echo json_encode($dis_info);
+                    echo json_encode($dis_info);
+                } else {
+                    echo json_encode([]);
+                }
             }
-            else{
-                echo json_encode([]);
-            }
-
-            
         }
     }
 
