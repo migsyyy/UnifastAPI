@@ -13,7 +13,9 @@ class HeiController extends Controller
     public function disbursementInfo($region = '', $province = '', $heiid = '')
     {
         // echo $heiid;
-        $region = str_pad($region, 2, '0', STR_PAD_LEFT);
+        if ($region) {
+            $region = str_pad($region, 2, '0', STR_PAD_LEFT);
+        }
         if (!$region) {
             $this->getRegions();
         } elseif (!$province && $region) {
