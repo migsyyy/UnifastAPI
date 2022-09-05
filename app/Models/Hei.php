@@ -29,7 +29,7 @@ class Hei extends Model
         }        
     
         foreach ($heiprovince as $key => &$province) {
-            $province->hei_prov_code=$key;
+            $province->hei_prov_code=$key+1;
         }
         
         echo json_encode($heiprovince,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
@@ -58,6 +58,7 @@ class Hei extends Model
 
     public function showHei($heiregion, $heiprov, $heitype)
     {
+        $heiprov = $heiprov - 1;
 
         if ($heitype == '') {
             $hei_it = '';
