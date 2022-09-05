@@ -20,12 +20,12 @@ class HeiController extends Controller
             if (is_numeric($region)) {
                 $this->getProvinces($region);
             }
-            echo json_encode([]);
+            // echo json_encode([]);
         } elseif (!$heiid && $region && $province) {
             if (is_numeric($region) && is_numeric($province)) {
-                $this->getProvinces($region);
+                $this->getHeis($region, $province);
             }
-            echo json_encode([]);
+            // echo json_encode([]);
         } elseif ($heiid && $region && $province) {
             if (is_numeric($heiid) && is_numeric($region) && is_numeric($province)) {
 
@@ -43,24 +43,26 @@ class HeiController extends Controller
                             $hei_uii = $hei->hei_uii;
                         }
                     }
-                    $esgppa = DB::table("tbl_esgppa_2021_2022")
-                        ->select("uid", "hei_uii", "hei_name", "date_disbursed")
-                        ->where("in_disbursement", "=", "PAID")
-                        ->where("hei_uii", "=", $hei_uii);
+                    if (isset($hei_uii)) {
 
-                    $pnsl = DB::table("tbl_pnsl_2021_2022")
-                        ->select("uid", "hei_uii", "hei_name", "date_disbursed")
-                        ->where("in_disbursement", "=", "PAID")
-                        ->where("hei_uii", "=", $hei_uii);
+                        $esgppa = DB::table("tbl_esgppa_2021_2022")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                            ->where("in_disbursement", "=", "PAID")
+                            ->where("hei_uii", "=", $hei_uii);
 
-                    $lista = DB::table("tbl_lista_2021_2022")
-                        ->select("uid", "hei_uii", "hei_name", "date_disbursed")
-                        ->where("in_disbursement", "=", "PAID")
-                        ->where("hei_uii", "=", $hei_uii);
+                        $pnsl = DB::table("tbl_pnsl_2021_2022")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                            ->where("in_disbursement", "=", "PAID")
+                            ->where("hei_uii", "=", $hei_uii);
 
-                    $union = $esgppa->union($pnsl)->union($lista);
-                    $dis_info = DB::table("tbl_heis")
-                        ->selectRaw('union_epl.hei_uii,
+                        $lista = DB::table("tbl_lista_2021_2022")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                            ->where("in_disbursement", "=", "PAID")
+                            ->where("hei_uii", "=", $hei_uii);
+
+                        $union = $esgppa->union($pnsl)->union($lista);
+                        $dis_info = DB::table("tbl_heis")
+                            ->selectRaw('union_epl.hei_uii,
                                 union_epl.hei_name,
                                 tbl_heis.hei_it,
                                 tbl_heis.hei_focal,
@@ -74,15 +76,14 @@ class HeiController extends Controller
                                 END AS amount,
                                 date_disbursed,
                                 COUNT(*) AS bene')
-                        ->joinSub($union, 'union_epl', function ($join) {
-                            $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
-                        })
-                        ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed')
-                        ->get();
+                            ->joinSub($union, 'union_epl', function ($join) {
+                                $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
+                            })
+                            ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed')
+                            ->get();
 
-                    echo json_encode($dis_info);
-                } else {
-                    echo json_encode([]);
+                        echo json_encode($dis_info);
+                    }
                 }
             }
         }
@@ -96,18 +97,20 @@ class HeiController extends Controller
     }
     public function getProvinces($heiregion)
     {
-        $heiregion = str_pad($heiregion, 2, '0', STR_PAD_LEFT);
-        if ($heiregion == 15) {
-            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
-        } else {
-            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
-        }
+        if (is_numeric($heiregion)) {
+            $heiregion = str_pad($heiregion, 2, '0', STR_PAD_LEFT);
+            if ($heiregion == 15) {
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+            } else {
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+            }
 
-        foreach ($heiprovince as $key => &$province) {
-            $province->hei_prov_code = $key + 1;
-        }
+            foreach ($heiprovince as $key => &$province) {
+                $province->hei_prov_code = $key + 1;
+            }
 
-        echo json_encode($heiprovince, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            echo json_encode($heiprovince, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
     }
 
     public function searchHeiName($heiname)
@@ -133,6 +136,7 @@ class HeiController extends Controller
 
     public function getHeis($heiregion = '', $heiprov = '', $heitype = '')
     {
+
         $heiprov = $heiprov - 1;
         $heiregion = str_pad($heiregion, 2, '0', STR_PAD_LEFT);
 
@@ -153,17 +157,16 @@ class HeiController extends Controller
         } else {
             $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
         }
-        if ($heiprov < count($heiprovince)) {
-            $heiprovcode = $heiprovince[$heiprov]->hei_prov_code;
-            $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_it', 'like', '%' . $hei_it . '%')->where('hei_prov_code', '=', $heiprovcode)->orderBy('hei_shortname')->get();
-            foreach ($heis as $key => &$hei) {
-                $hei->seq_id = $key + 1;
+        if (is_numeric($heiregion) && is_numeric($heiprov)) {
+
+            if ($heiprov < count($heiprovince)) {
+                $heiprovcode = $heiprovince[$heiprov]->hei_prov_code;
+                $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_it', 'like', '%' . $hei_it . '%')->where('hei_prov_code', '=', $heiprovcode)->orderBy('hei_shortname')->get();
+                foreach ($heis as $key => &$hei) {
+                    $hei->seq_id = $key + 1;
+                }
+                echo json_encode($heis, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             }
-            echo json_encode($heis, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            return json_encode($heis, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        } else {
-            echo json_encode([]);
-            return json_encode([]);
         }
     }
 
