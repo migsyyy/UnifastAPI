@@ -23,12 +23,15 @@ class Hei extends Model
     public function getHeiProvinces($heiregion)
     {
         if ($heiregion==15) {
-            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region','hei_prov_name','hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name','hei_psg_region','hei_prov_code')->get();
+            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region','hei_prov_name','hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name','hei_psg_region','hei_prov_code')->get()->toArray();
         }else{
-            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region','hei_prov_name','hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name','hei_psg_region','hei_prov_code')->get();
+            $heiprovince = DB::table('tbl_heis')->select('hei_psg_region','hei_prov_name','hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name','hei_psg_region','hei_prov_code')->get()->toArray();
+        }        
+    
+        foreach ($heiprovince as $key => &$province) {
+            $province->hei_prov_code=$key;
         }
-
-        // print_r($heiprovince->toArray());
+        
         echo json_encode($heiprovince,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
     }
 
@@ -55,6 +58,7 @@ class Hei extends Model
 
     public function showHei($heiregion, $heiprov, $heitype)
     {
+
         if ($heitype == '') {
             $hei_it = '';
         }
@@ -72,12 +76,13 @@ class Hei extends Model
         }else{
             $heiprovince = DB::table('tbl_heis')->select('hei_psg_region','hei_prov_name','hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name','hei_psg_region','hei_prov_code')->get()->toArray();
         }
-        
-        $heiprovcode = $heiprovince[$heiprov]->hei_prov_code;
+        if ($heiprov < count($heiprovince)) {
+            $heiprovcode = $heiprovince[$heiprov]->hei_prov_code;
+            $hei = DB::table('tbl_heis')->select('hei_region_nir')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_it', 'like', '%' . $hei_it . '%')->where('hei_prov_code', '=', $heiprovcode)->orderBy('hei_shortname')->get();
+            echo json_encode($hei,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+        } else{
+            echo json_encode([]);
+        }
 
-
-        $hei = DB::table('tbl_heis')->select('hei_region_nir')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_it', 'like', '%' . $hei_it . '%')->where('hei_prov_code', '=', $heiprovcode)->get();
-
-        echo json_encode($hei,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
     }
 }
