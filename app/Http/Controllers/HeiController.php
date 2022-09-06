@@ -48,17 +48,17 @@ class HeiController extends Controller
                     if (isset($hei_uii)) {
 
                         $esgppa = DB::table("tbl_esgppa_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $pnsl = DB::table("tbl_pnsl_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $lista = DB::table("tbl_lista_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
