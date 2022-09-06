@@ -26,7 +26,8 @@ Route::get('/listhei/{region}', [HeiController::class, 'getProvinces']);
 Route::get('/listhei/{region}/{province}', [HeiController::class, 'getHeis']);
 Route::get('/listhei/{region}/{province}/{heitype}', [HeiController::class, 'getHeis']);
 
-Route::get('/disinfo/{region?}/{province?}/{hei?}', [HeiController::class, 'disbursementInfo']);
+Route::get('/disinfoTES/{region?}/{province?}/{hei?}', [HeiController::class, 'disbursementInfoTES']);
+Route::get('/disinfoTDP/{region?}/{province?}/{hei?}', [HeiController::class, 'disbursementInfoTDP']);
 
 Route::get('/searchhei/{hei}', [HeiController::class, 'searchhei']);
 Route::get('/hei/{hei}', [HeiController::class, 'getHeiInfo']);
