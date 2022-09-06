@@ -48,17 +48,17 @@ class HeiController extends Controller
                     if (isset($hei_uii)) {
 
                         $esgppa = DB::table("tbl_esgppa_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $pnsl = DB::table("tbl_pnsl_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $lista = DB::table("tbl_lista_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
@@ -71,15 +71,18 @@ class HeiController extends Controller
                                 tbl_heis.hei_focal,
                                 tbl_heis.hei_focal_contact,
                                 tbl_heis.hei_focal_email,
-                                tbl_heis.hei_it,
-                                7500 * COUNT(*) AS
-                                amount,
+                                CASE
+                                    tbl_heis.hei_it
+                                    WHEN "PRIVATE HEI" THEN 30000 * COUNT(*)
+                                    WHEN "SUC" THEN 20000 * COUNT(*)
+                                    WHEN "LUC" THEN 20000 * COUNT(*)
+                                END AS amount,
                                 date_disbursed,
                                 COUNT(*) AS bene')
                             ->joinSub($union, 'union_epl', function ($join) {
                                 $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
                             })
-                            ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed','union_epl.semester')
+                            ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed','semester')
                             ->get();
 
                         echo json_encode($dis_info);
