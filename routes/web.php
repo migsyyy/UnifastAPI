@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Route::get('/', function () {
-     return view('welcome');
+     return redirect()->away('https://www.unifast.gov.ph');
 });
 
 //list heis
