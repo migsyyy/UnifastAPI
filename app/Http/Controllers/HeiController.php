@@ -48,29 +48,32 @@ class HeiController extends Controller
                     if (isset($hei_uii)) {
 
                         $esgppa = DB::table("tbl_esgppa_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $pnsl = DB::table("tbl_pnsl_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $lista = DB::table("tbl_lista_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $union = $esgppa->union($pnsl)->union($lista);
-                        $dis_info = DB::table("tbl_heis")
-                            ->selectRaw('union_epl.hei_uii,
-                                union_epl.hei_name,
+
+                        $hei_info = DB::table('tbl_heis')->selectRaw('
+                        hei_name,
+                        hei_focal,
+                        hei_focal_contact,
+                        hei_focal_email')->where('hei_uii', $hei_uii)->get()->toArray();
+                        $dis_info = json_decode(json_encode($hei_info[0]), true);
+
+                        $disbursements = DB::table("tbl_heis")
+                            ->selectRaw('
                                 union_epl.semester,
-                                tbl_heis.hei_it,
-                                tbl_heis.hei_focal,
-                                tbl_heis.hei_focal_contact,
-                                tbl_heis.hei_focal_email,
                                 CASE
                                     tbl_heis.hei_it
                                     WHEN "PRIVATE HEI" THEN 30000 * COUNT(*)
@@ -82,8 +85,9 @@ class HeiController extends Controller
                             ->joinSub($union, 'union_epl', function ($join) {
                                 $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
                             })
-                            ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed','semester')
+                            ->groupBy('tbl_heis.hei_it', 'date_disbursed', 'semester')
                             ->get();
+                        $dis_info['disbursements'] = json_decode(json_encode($disbursements), true);
 
                         echo json_encode($dis_info);
                     }
@@ -129,19 +133,20 @@ class HeiController extends Controller
                     if (isset($hei_uii)) {
 
                         $tdp = DB::table("tbl_chedtdp_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed","semester")
+                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
-                        // $union = $esgppa->union($pnsl)->union($lista);
-                        $dis_info = DB::table("tbl_heis")
-                            ->selectRaw('union_epl.hei_uii,
-                                union_epl.hei_name,
+                        $hei_info = DB::table('tbl_heis')->selectRaw('
+                            hei_name,
+                            hei_focal,
+                            hei_focal_contact,
+                            hei_focal_email')->where('hei_uii', $hei_uii)->get()->toArray();
+                        $dis_info = json_decode(json_encode($hei_info[0]), true);
+
+                        $disbursements = DB::table("tbl_heis")
+                            ->selectRaw('
                                 union_epl.semester,
-                                tbl_heis.hei_it,
-                                tbl_heis.hei_focal,
-                                tbl_heis.hei_focal_contact,
-                                tbl_heis.hei_focal_email,
                                 tbl_heis.hei_it,
                                 7500 * COUNT(*) AS
                                 amount,
@@ -150,8 +155,9 @@ class HeiController extends Controller
                             ->joinSub($tdp, 'union_epl', function ($join) {
                                 $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
                             })
-                            ->groupBy('union_epl.hei_uii', 'union_epl.hei_name', 'tbl_heis.hei_it', 'date_disbursed','union_epl.semester')
+                            ->groupBy('tbl_heis.hei_it', 'date_disbursed', 'union_epl.semester')
                             ->get();
+                        $dis_info['disbursements'] = json_decode(json_encode($disbursements), true);
 
                         echo json_encode($dis_info);
                     }
