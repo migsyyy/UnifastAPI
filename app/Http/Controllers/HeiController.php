@@ -38,7 +38,16 @@ class HeiController extends Controller
                 }
                 if ($province <= count($heiprovince)) {
                     $heiprovcode = $heiprovince[$province - 1]->hei_prov_code;
-                    $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_prov_code', '=', $heiprovcode)->orderBy('hei_shortname')->get();
+                    $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_prov_code', '=', $heiprovcode)
+                    ->where('hei_focal','!=','NO UNIFAST')
+                    ->where('hei_focal','!=','HEI CLOSED')
+                    ->where('hei_focal','!=','INACTIVE')
+                    ->where('hei_focal','!=','NO GRANTEES')
+                    ->where('hei_focal','!=','No TES grantees')
+                    ->where('hei_focal','!=','NOT OPERATIONAL')
+                    ->where('hei_focal','!=','')
+                    ->whereNotNull('hei_focal')
+                    ->orderBy('hei_shortname')->get();
                     foreach ($heis as $key => $hei) {
                         // $hei->seq_id = $key + 1;
                         if ($key + 1 == $heiid) {
@@ -123,7 +132,16 @@ class HeiController extends Controller
                 }
                 if ($province <= count($heiprovince)) {
                     $heiprovcode = $heiprovince[$province - 1]->hei_prov_code;
-                    $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_prov_code', '=', $heiprovcode)->orderBy('hei_shortname')->get();
+                    $heis = DB::table('tbl_heis')->select('hei_region_nir')->select('hei_uii')->addSelect('hei_prov_name')->addSelect('hei_shortname')->addSelect('hei_it')->addSelect('hei_ct')->where('hei_prov_code', '=', $heiprovcode)
+                    ->where('hei_focal','!=','NO UNIFAST')
+                    ->where('hei_focal','!=','HEI CLOSED')
+                    ->where('hei_focal','!=','INACTIVE')
+                    ->where('hei_focal','!=','NO GRANTEES')
+                    ->where('hei_focal','!=','No TES grantees')
+                    ->where('hei_focal','!=','NOT OPERATIONAL')
+                    ->where('hei_focal','!=','')
+                    ->whereNotNull('hei_focal')
+                    ->orderBy('hei_shortname')->get();
                     foreach ($heis as $key => $hei) {
                         // $hei->seq_id = $key + 1;
                         if ($key + 1 == $heiid) {
