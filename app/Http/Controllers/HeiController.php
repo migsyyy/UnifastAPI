@@ -279,40 +279,40 @@ class HeiController extends Controller
 
         echo '[
             {
-                "hei_psg_region": "01",
-                "hei_region_nir": "01 - Ilocos Region"
+                "hei_psg_region": "1",
+                "hei_region_nir": "1 - Ilocos Region"
             },
             {
-                "hei_psg_region": "02",
-                "hei_region_nir": "02 - Cagayan Valley"
+                "hei_psg_region": "2",
+                "hei_region_nir": "2 - Cagayan Valley"
             },
             {
-                "hei_psg_region": "03",
-                "hei_region_nir": "03 - Central Luzon"
+                "hei_psg_region": "3",
+                "hei_region_nir": "3 - Central Luzon"
             },
             {
-                "hei_psg_region": "04",
-                "hei_region_nir": "04 - CALABARZON"
+                "hei_psg_region": "4",
+                "hei_region_nir": "4 - CALABARZON"
             },
             {
-                "hei_psg_region": "05",
-                "hei_region_nir": "05 - Bicol Region"
+                "hei_psg_region": "5",
+                "hei_region_nir": "5 - Bicol Region"
             },
             {
-                "hei_psg_region": "06",
-                "hei_region_nir": "06 - Western Visayas"
+                "hei_psg_region": "6",
+                "hei_region_nir": "6 - Western Visayas"
             },
             {
-                "hei_psg_region": "07",
-                "hei_region_nir": "07 - Central Visayas"
+                "hei_psg_region": "7",
+                "hei_region_nir": "7 - Central Visayas"
             },
             {
-                "hei_psg_region": "08",
-                "hei_region_nir": "08 - Eastern Visayas"
+                "hei_psg_region": "8",
+                "hei_region_nir": "8 - Eastern Visayas"
             },
             {
-                "hei_psg_region": "09",
-                "hei_region_nir": "09 - Zamboanga Peninsula"
+                "hei_psg_region": "9",
+                "hei_region_nir": "9 - Zamboanga Peninsula"
             },
             {
                 "hei_psg_region": "10",
