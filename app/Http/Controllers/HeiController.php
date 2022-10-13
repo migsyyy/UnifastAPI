@@ -57,17 +57,17 @@ class HeiController extends Controller
                     if (isset($hei_uii)) {
 
                         $esgppa = DB::table("tbl_esgppa_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
+                            ->selectRaw("uid, hei_uii, hei_name, date_disbursed, semester, '2021-2022' as ac_year")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $pnsl = DB::table("tbl_pnsl_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
+                            ->selectRaw("uid, hei_uii, hei_name, date_disbursed, semester, '2021-2022' as ac_year")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
                         $lista = DB::table("tbl_lista_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
+                            ->selectRaw("uid, hei_uii, hei_name, date_disbursed, semester, '2021-2022' as ac_year")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
@@ -83,6 +83,7 @@ class HeiController extends Controller
                         $disbursements = DB::table("tbl_heis")
                             ->selectRaw('
                                 union_epl.semester,
+                                union_epl.ac_year,
                                 CASE
                                     tbl_heis.hei_it
                                     WHEN "PRIVATE HEI" THEN 30000 * COUNT(*)
@@ -94,7 +95,7 @@ class HeiController extends Controller
                             ->joinSub($union, 'union_epl', function ($join) {
                                 $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
                             })
-                            ->groupBy('tbl_heis.hei_it', 'date_disbursed', 'semester')
+                            ->groupBy('tbl_heis.hei_it', 'date_disbursed', 'semester', 'union_epl.ac_year')
                             ->get();
                         $dis_info['disbursements'] = json_decode(json_encode($disbursements), true);
 
@@ -151,7 +152,7 @@ class HeiController extends Controller
                     if (isset($hei_uii)) {
 
                         $tdp = DB::table("tbl_chedtdp_2021_2022")
-                            ->select("uid", "hei_uii", "hei_name", "date_disbursed", "semester")
+                            ->selectRaw("uid, hei_uii, hei_name, date_disbursed, semester, '2021-2022' as ac_year")
                             ->where("in_disbursement", "=", "PAID")
                             ->where("hei_uii", "=", $hei_uii);
 
@@ -165,6 +166,7 @@ class HeiController extends Controller
                         $disbursements = DB::table("tbl_heis")
                             ->selectRaw('
                                 union_epl.semester,
+                                union_epl.ac_year,
                                 tbl_heis.hei_it,
                                 7500 * COUNT(*) AS
                                 amount,
@@ -173,7 +175,7 @@ class HeiController extends Controller
                             ->joinSub($tdp, 'union_epl', function ($join) {
                                 $join->on('tbl_heis.hei_uii', '=', 'union_epl.hei_uii');
                             })
-                            ->groupBy('tbl_heis.hei_it', 'date_disbursed', 'union_epl.semester')
+                            ->groupBy('tbl_heis.hei_it', 'date_disbursed', 'union_epl.semester', 'union_epl.ac_year')
                             ->get();
                         $dis_info['disbursements'] = json_decode(json_encode($disbursements), true);
 
