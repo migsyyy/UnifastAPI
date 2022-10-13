@@ -195,9 +195,10 @@ class HeiController extends Controller
         if (is_numeric($heiregion)) {
             $heiregion = str_pad($heiregion, 2, '0', STR_PAD_LEFT);
             if ($heiregion == 15) {
-                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
-            } else {
-                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->orderBy('hei_prov_code')->get()->toArray();
+            }
+            else {
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->orderBy('hei_prov_code')->get()->toArray();
             }
 
             foreach ($heiprovince as $key => &$province) {
@@ -249,9 +250,9 @@ class HeiController extends Controller
                 $hei_it = 'Private HEI';
             }
             if ($heiregion == 15) {
-                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', 'like', '%15%')->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->orderBy('hei_prov_code')->get()->toArray();
             } else {
-                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->get()->toArray();
+                $heiprovince = DB::table('tbl_heis')->select('hei_psg_region', 'hei_prov_name', 'hei_prov_code')->where('hei_psg_region', $heiregion)->groupBy('hei_prov_name', 'hei_psg_region', 'hei_prov_code')->orderBy('hei_prov_code')->get()->toArray();
             }
 
             if ($heiprov < count($heiprovince)) {
